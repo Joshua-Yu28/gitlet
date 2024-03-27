@@ -9,7 +9,7 @@ import static gitlet.Utils.*;
  *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
- *  @author TODO
+ *  @author Josh Yu
  */
 public class Repository {
     /**
@@ -25,5 +25,19 @@ public class Repository {
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
 
-    /* TODO: fill in the rest of this class. */
+    /** The object directory. */
+     public static final File OBJECTS_DIR = join(CWD, "objects");
+
+     /** The reference directory */
+     public static final File REFS_DIR = join(GITLET_DIR,"refs");
+
+     /** The log directory. */
+     public static final File LOGS_DIR = join(GITLET_DIR, "logs");
+
+     /** Files */
+
+
+
+
+
 }
