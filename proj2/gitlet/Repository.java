@@ -26,7 +26,7 @@ public class Repository {
     public static final File GITLET_DIR = join(CWD, ".gitlet");
 
     /** The object directory. */
-     public static final File OBJECTS_DIR = join(CWD, "objects");
+     public static final File OBJECTS_DIR = join(GITLET_DIR, "objects");
 
      /** The reference directory */
      public static final File REFS_DIR = join(GITLET_DIR,"refs");
