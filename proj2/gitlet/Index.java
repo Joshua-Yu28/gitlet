@@ -1,15 +1,17 @@
 package gitlet;
-import static gitlet.Utils.*;
+
 import java.io.File;
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.*;
+import static gitlet.Utils.*;
+import static gitlet.Repository.*;
 
 
 public class Index implements Serializable {
   /** Map of the files staged.*/
-  private final Map<File, Blob> Staged;
+  private final Map<File, Blob> staged;
   /** Map of the  files removed.*/
-  private final Map<File,Blob> removed;
+  private final Map<File, Blob> removed;
 
   /**Default constructor**/
   public Index(){
@@ -22,4 +24,14 @@ public class Index implements Serializable {
     writeObject(INDEX, this);
   }
 
+  public void clear(){
+    staged.clear();
+    removed.clear();
+    save();
+  }
+
+  /** Adds the specified file into staged area.*/
+  public Map<File, Blob> getStaged() {
+    return Staged;
+  }
 }
