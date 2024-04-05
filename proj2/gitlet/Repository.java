@@ -108,5 +108,14 @@ public class Repository {
     }
 
 
+  /** Returns the object of the current commit. */
+  public static Commit getCurrentCommit(){
+    return getCurrentBranch().getCommit();
+  }
+
+  /** Returns the object of the current working branch. */
+  public static Branch getCurrentBranch(){
+    return readObject(join(GITLET_DIR, readContentsAsString(HEAD)), Branch.class);
+  }
 
 }

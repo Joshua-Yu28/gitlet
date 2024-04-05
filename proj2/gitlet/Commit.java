@@ -1,7 +1,13 @@
 package gitlet;
 
-// TODO: any imports you need here
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
+import static gitlet.Utils.*;
+import static gitlet.Repository.*;
 import java.util.Date; // TODO: You'll likely use this in this class
 
 /** Represents a gitlet commit object.
@@ -10,27 +16,43 @@ import java.util.Date; // TODO: You'll likely use this in this class
  *
  *  @author Josh Yu
  */
-public class Commit {
+public class Commit implements Serializable{
     /**
-     * TODO: add instance variables here.
      *
      * List all instance variables of the Commit class here with a useful
      * comment above them describing what that variable represents and how that
      * variable is used. We've provided one example for `message`.
      */
 
-    /** The message of this Commit. */
-    private String message;
-    private String timestamp;
-    //Something that keeps track of what files this commit is tracking
-    private Commit parent;
+    private final Map<File, Blob> blobs = new HashMap<File, Blob>();
+    private final String message;
+    private final Date date;
+    private final Commit parent;
+    private final Commit mergeParent;
+    private String UID;
 
-    public Commit(String message, Commit parent){
+    public Commit (){
+        this.message = "initial commit";
+        this.date = new Date(0);
+        this.parent = null;
+        this.mergeParent = null;
+    }
+
+    public Commit(String message){
         this.message = message;
-        this.parent = parent;
-        if(this.parent == null){
-            this.timestamp = "00:00:00 UTC, Thursday, 1 January 1970";
-        }
+        this.date = new Date();
+        this.parent = getCurrentCommit();
+        this.mergeParent = null;
+        this.blobs.putAll(parent.blobs);
+    }
+
+    /** Constructor of a merged commit. */
+    public Commit(Branch current, Branch other){
+        this.message = String.format("Merged %s into %s.", other.getName(), current.getName());
+        this.date = new Date();
+        this.parent = current.getCommit();
+        this.mergeParent = other.getCommit();
+        this.blobs.putAll(getIndex().getStaged());
     }
 
     public String getMessage(){

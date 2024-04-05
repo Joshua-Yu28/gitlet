@@ -24,14 +24,44 @@ public class Index implements Serializable {
     writeObject(INDEX, this);
   }
 
+  /** Clear the staging area */
   public void clear(){
     staged.clear();
     removed.clear();
     save();
   }
 
+  /** Check if the file is modified*/
+  public void isModified(File file){
+    Blob b;
+    if(isStaged(file)){
+      b = staged.get(file);
+    }else{
+      b = getCurrentCommit().getBlob(file);
+    }
+    if (b = null){
+      return true;
+    }
+    byte[] oldFile = b.getContents();
+    byte[] newFile = readContents(file);
+    return !Arrays.equals(oldFile, newFile);
+  }
+
+  public boolean isStaged(File file){
+    return staged.containsKey(file);
+  }
   /** Adds the specified file into staged area.*/
+  public void add(String fileName, File file){
+    if(isModified(file)){
+
+    }
+
+  }
+
+
+
+
   public Map<File, Blob> getStaged() {
-    return Staged;
+    return staged;
   }
 }
