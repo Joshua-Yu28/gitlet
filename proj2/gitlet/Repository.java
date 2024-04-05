@@ -81,7 +81,8 @@ public class Repository {
       writeContents(HEAD, master.getPath().toString());
 
       //Creates initial commit
-      Commit init = new Commit("initial commit", null);
+      Commit init = new Commit;
+      init.commit();
     }
 
 
@@ -118,4 +119,8 @@ public class Repository {
     return readObject(join(GITLET_DIR, readContentsAsString(HEAD)), Branch.class);
   }
 
+  /** Returns the repository staging area. */
+  public static Index getIndex(){
+    return readObject(INDEX, Index.class);
+  }
 }

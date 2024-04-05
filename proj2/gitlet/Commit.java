@@ -55,16 +55,53 @@ public class Commit implements Serializable{
         this.blobs.putAll(getIndex().getStaged());
     }
 
+    /** Creates and writes to the Commit object. */
+    public void save(){
+        try{
+            if(!getPathFolder().exists()){
+                getPathFolder().mkdir();
+            }
+            getPathFile().createNewFile();
+            writeObject(getPathFile(), this);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+
+    }
+
     public String getMessage(){
         return this.message;
     }
 
-    public String getTimestamp() {
-        return timestamp;
+    public Map<File, Blob> getBlobs() {
+        return blobs;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public Commit getMergeParent() {
+        return mergeParent;
+    }
+
+    public String getUID() {
+        return UID;
     }
 
     public Commit getParent() {
         return parent;
     }
-    /* TODO: fill in the rest of this class. */
+
+    /** Returns the path to the objs subfolder. */
+    public File getPathFolder() {
+        return join(OBJECTS_DIR, this.UID.substring(0, 2));
+    }
+
+    /** Returns the path to the file holding the commit object. */
+    public File getPathFile() {
+        return join(getPathFolder(), this.UID.substring(2));
+    }
+
+
 }
