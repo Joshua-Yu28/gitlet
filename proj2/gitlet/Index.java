@@ -65,3 +65,8 @@ public class Index implements Serializable {
     return staged;
   }
 }
+
+  public Map<File, Blob> getRemoved() {
+    return removed;
+}
+}

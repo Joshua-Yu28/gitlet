@@ -10,7 +10,7 @@ import static gitlet.Utils.*;
 import static gitlet.Repository.*;
 import java.util.Date; // TODO: You'll likely use this in this class
 
-/** Represents a gitlet commit object.
+/** Represents a gitlet commit obje2ct.
  *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
@@ -66,7 +66,48 @@ public class Commit implements Serializable{
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
+    }
 
+    /** Creates and writes the Commit object to the specified repository. */
+    public void saveTo(File dir) {
+        File pathFolder = join(dir, UID.substring(0, 2));
+        File pathFile = join(pathFolder, UID.substring(2));
+        try {
+            if (!pathFolder.exists()) {
+                pathFolder.mkdir();
+            }
+            pathFile.createNewFile();
+            writeObject(pathFile, this);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void commit(){
+        // Checks if the staging area is initial or merge commit.
+        if(parent != null && mergeParent == null){
+            checkoutCommit();
+        }
+        setUID();
+        save();
+        Branch b = getCurrentBranch();
+        b.setCommit(this);
+        writeContents(b.getLogFile(), this.toString()+ "\n" + readContentsAsString(b.getLogFile()));
+    }
+
+    /** Checks the staging area to validate commit eligibility. */
+    public void checkoutCommit(){
+        Index idx = getIndex();
+        Map<File,Blob> staged = idx.getStaged();
+        Map<File,Blob> removed = idx.getRemoved();
+        if (staged.isEmpty() && removed.isEmpty()) {
+            exit("No changes added to the commit.");
+        }
+        for (File f : removed.keySet()){
+            blobs.remove(f);
+            blobs.putAll(idx.getStaged());
+            idx.clear();
+        }
     }
 
     public String getMessage(){
