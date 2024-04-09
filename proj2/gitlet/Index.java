@@ -6,7 +6,9 @@ import java.util.*;
 import static gitlet.Utils.*;
 import static gitlet.Repository.*;
 
-
+/**
+ * Represents the staging area of the gitlet repository.
+ */
 public class Index implements Serializable {
   /** Map of the files staged.*/
   private final Map<File, Blob> staged;
@@ -32,20 +34,30 @@ public class Index implements Serializable {
   }
 
   /** Check if the file is modified*/
-  public void isModified(File file){
+  public boolean isModified(File file){
     Blob b;
     if(isStaged(file)){
       b = staged.get(file);
     }else{
       b = getCurrentCommit().getBlob(file);
     }
-    if (b = null){
+    if (b == null){
       return true;
     }
     byte[] oldFile = b.getContents();
     byte[] newFile = readContents(file);
     return !Arrays.equals(oldFile, newFile);
   }
+
+  /** Checks if there is any untracked files that would be overwritten.*/
+  public checkUntracked(Commit commit) {
+    for(String s: getUntracked()){
+      if(commit.isTracked(join(CWD, s))){
+        exit("There is an untracked file in the way; "
+            + "delete it, or add and commit it first.");
+      }
+  }
+
 
   public boolean isStaged(File file){
     return staged.containsKey(file);
@@ -60,13 +72,22 @@ public class Index implements Serializable {
 
 
 
+    /** Returns whether the specified file is staged for addition. */
+    public boolean isStaged(File file) {
+      return staged.containsKey(file);
+    }
 
-  public Map<File, Blob> getStaged() {
-    return staged;
-  }
-}
+    /** Returns whether the specified file is staged for removal. */
+    public boolean isRemoved(File file) {
+      return removed.containsKey(file);
+    }
+
+    /** Returns the map of the staged blobs. */
+    public Map<File, Blob> getStaged() {
+      return this.staged;
+    }
 
   public Map<File, Blob> getRemoved() {
-    return removed;
+    return this.removed;
 }
 }

@@ -86,7 +86,7 @@ public class Commit implements Serializable{
     public void commit(){
         // Checks if the staging area is initial or merge commit.
         if(parent != null && mergeParent == null){
-            checkoutCommit();
+            checkCommit();
         }
         setUID();
         save();
@@ -96,7 +96,7 @@ public class Commit implements Serializable{
     }
 
     /** Checks the staging area to validate commit eligibility. */
-    public void checkoutCommit(){
+    public void checkCommit(){
         Index idx = getIndex();
         Map<File,Blob> staged = idx.getStaged();
         Map<File,Blob> removed = idx.getRemoved();
