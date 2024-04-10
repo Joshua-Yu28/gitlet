@@ -145,6 +145,58 @@ public class Commit implements Serializable{
         return commits;
     }
 
+    /** Returns the Commit object of the specified UID (or abbreviation). */
+    public static Commit find(String commitID) {
+        Commit commit = null;
+        for (Commit c : findAll()) {
+            if (c.getUID().startsWith(commitID)) {
+                commit = c;
+                break;
+            }
+        }
+        // If no commit with the given id exists.
+        if (commit == null) {
+            exit("No commit with that id exists.");
+        }
+        return commit;
+    }
+
+    /** Finds the ids of all commits with the specified message and returns as a set. */
+    public static Set<String> findId(String message) {
+        Set<Commit> commits = findAll();
+        Set<String> ids = new HashSet<String>();
+        for (Commit c : commits) {
+            if (c.message.equals(message)) {
+                ids.add(c.getUID());
+            }
+        }
+        if (ids.size() == 0) {
+            exit("Found no commit with that message.");
+        }
+        return ids;
+    }
+
+    /** Deletes all the files (not the blobs) tracked by the commit.
+     *  The parameter is for checking whether any untracked files would be overwritten. */
+    public void deleteTrackedFiles(Commit commit) {
+        getIndex().checkUntracked(commit);
+        for (Blob b : blobs.values()) {
+            b.delete();
+        }
+    }
+
+    /** Overwrites all the files (not the blobs) tracked by the commit. */
+    public void overwriteTrackedFiles() {
+        for (Blob b : blobs.values()) {
+            b.overwrite();
+        }
+    }
+
+    /** Returns whether the specified file is tracked by the commit. */
+    public boolean isTracked(File file) {
+        return this.blobs.containsKey(file);
+    }
+
     public String getMessage(){
         return this.message;
     }
@@ -179,5 +231,18 @@ public class Commit implements Serializable{
         return join(getPathFolder(), this.UID.substring(2));
     }
 
-
+    /** Returns the commit as a log of String. */
+    @Override
+    public String toString() {
+        SimpleDateFormat d = new SimpleDateFormat("E MMM dd HH:mm:ss yyyy Z", Locale.ENGLISH);
+        StringBuilder log = new StringBuilder();
+        log.append("===\ncommit ").append(UID).append("\n");
+        if (mergeParent != null) {
+            log.append("Merge: ");
+            log.append(parent.UID, 0, 7).append(" ");
+            log.append(mergeParent.UID, 0, 7).append("\n");
+        }
+        log.append("Date: ").append(d.format(date)).append("\n").append(message).append("\n");
+        return log.toString();
+    }
 }
