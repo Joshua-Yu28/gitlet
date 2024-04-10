@@ -10,7 +10,7 @@ import static gitlet.Utils.*;
 import static gitlet.Repository.*;
 import java.util.Date; // TODO: You'll likely use this in this class
 
-/** Represents a gitlet commit obje2ct.
+/** Represents a gitlet commit object.
  *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
@@ -83,6 +83,7 @@ public class Commit implements Serializable{
         }
     }
 
+    /** Commits and writes to the logs. */
     public void commit(){
         // Checks if the staging area is initial or merge commit.
         if(parent != null && mergeParent == null){
@@ -108,6 +109,40 @@ public class Commit implements Serializable{
             blobs.putAll(idx.getStaged());
             idx.clear();
         }
+    }
+
+    /** Generates and sets the UID of the commit. */
+    public void setUID() {
+        List<Object> vals = new ArrayList<Object>();
+        Set<File> files = blobs.keySet();
+        for (File f : files) {
+            vals.add(f.toString());
+        }
+        if (parent != null) {
+            vals.add(parent.toString());
+        }
+        vals.add(message);
+        vals.add(date.toString());
+        this.UID = sha1(vals);
+    }
+
+    /** Finds all commits ever made and returns them as a set. */
+    public static Set<Commit> findAll() {
+        List<String> dirs = subDirNamesIn(OBJECTS_DIR);
+        Set<Commit> commits = new HashSet<Commit>();
+        if (dirs != null) {
+            for (String dir : dirs) {
+                File subDir = join(OBJECTS_DIR, dir);
+                List<String> files = plainFilenamesIn(subDir);
+                if (files == null) {
+                    continue;
+                }
+                for (String file: files) {
+                    commits.add(readObject(join(subDir, file), Commit.class));
+                }
+            }
+        }
+        return commits;
     }
 
     public String getMessage(){
