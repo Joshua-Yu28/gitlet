@@ -170,7 +170,7 @@ public class Commit implements Serializable{
                 ids.add(c.getUID());
             }
         }
-        if (ids.size() == 0) {
+        if (ids.isEmpty()) {
             exit("Found no commit with that message.");
         }
         return ids;
@@ -204,7 +204,9 @@ public class Commit implements Serializable{
     public Map<File, Blob> getBlobs() {
         return blobs;
     }
-
+    public Blob getBlob(File file) {
+        return blobs.get(file);
+    }
     public Date getDate() {
         return date;
     }
